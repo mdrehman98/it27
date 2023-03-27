@@ -1,0 +1,133 @@
+{% extends '../../base.html' %}
+{% block title %}{% endblock %}
+{% block content %}
+    <body>
+    <div class="x-nav">
+          <span class="layui-breadcrumb">
+            <a href="">Home</a>
+            <a href="">Patient Manage</a>
+            <a>
+              <cite>Patient List</cite></a>
+          </span>
+        <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:3px;float:right"
+           onclick="location.reload()" title="Refresh">
+            <i class="layui-icon layui-icon-refresh" style="line-height:30px"></i></a>
+    </div>
+    <div class="layui-fluid">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-body ">
+                        <form class="layui-form layui-col-space5">
+                            <div class="layui-inline layui-show-xs-block">
+                                <input type="text" name="keywords" placeholder="Please enter name"
+                                       autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                            <div class="layui-inline layui-show-xs-block">
+                                <button class="layui-btn search" type="button" data-type="reload"><i class="layui-icon">&#xe615;</i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="layui-card-body ">
+                        <table class="layui-hide" id="test"></table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+
+    {% verbatim %}
+    <script type="text/html" id="statusTpl">
+        {{#  if(d.status == 1){ }}
+        <span style="color: green;">Available</span>
+        {{#  } else { }}
+        <span style="color: red;">Unavailable</span>
+        {{#  } }}
+    </script>
+
+    <script type="text/html" id="actionsTpl">
+        <button type="button" class="layui-btn layui-btn-xs"
+                onclick="xadmin.open('Edit','edit.html?id={{d.id}}',900,500)">Edit
+        </button>
+        <button type="button" class="layui-btn layui-btn-danger layui-btn-xs"
+                onclick="del('delete.html','{{d.id}}')">Delete
+        </button>
+    </script>
+
+    <script type="text/html" id="passwordTpl">
+        <button type="button" class="layui-btn layui-btn-xs" onclick="password('{{d.id}}')">Reset Password</button>
+    </script>
+
+    {% endverbatim %}
+
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            table.render({
+                elem: '#test'
+                , url: 'index.html?ajax=1'
+                {#,width: 892#}
+                , height: 'full-200'
+                , cols: [[
+                    {#{type:'checkbox', fixed: 'left'}#}
+                    {field: 'id', minWidth: 80, title: 'ID', sort: true, fixed: 'left'}
+                    , {field: 'username', minWidth: 80, title: 'Username'}
+                    , {field: 'realname', minWidth: 80, title: 'Full Name'}
+                    , {field: 'email', minWidth: 80, title: 'Email'}
+                    , {field: 'status', minWidth: 80, title: 'Status', templet: '#statusTpl'}
+                    , {field: 'addtime', minWidth: 80, title: 'Add Time'}
+                    , {field: 'id', width: 140, title: 'Reset Password', templet: '#passwordTpl'}
+                    , {width: 140, title: 'Action', fixed: 'right', templet: '#actionsTpl'}
+                ]]
+                , id: 'testReload'
+                , page: true
+            });
+
+            var $ = layui.$, active = {
+                reload: function () {
+                    var keywords = $('input[name=keywords]').val();
+                    //执行重载
+                    table.reload('testReload', {
+                        page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                        , where: {
+                            keywords: keywords
+                        }
+                    });
+                }
+            };
+            // 搜索
+            $('.search').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+
+        });
+
+        function password(id) {
+            layer.confirm('Are you sure to operate？', {
+                btn: ['Sure', 'Cancel'] //按钮
+                , title: 'System prompt'
+            }, function () {
+                $.post("/admin/admin/password.html", {id: id}, function (res) {
+                    res = JSON.parse(res);
+                    if (res.state == 1) {
+                        layer.msg(res.msg, {icon: 1, time: 1000}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg(res.msg, {icon: 5, time: 1000});
+                    }
+                })
+            }, function () {
+
+            });
+        }
+    </script>
+{% endblock %}

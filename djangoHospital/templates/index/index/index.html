@@ -1,0 +1,104 @@
+{% include '../public/head.html' %}
+
+{% load static %}
+<div class="layui-container">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+
+            <div class="fly-panel">
+                <div class="fly-panel-title fly-filter">
+                    <a>Doctor List</a>
+                </div>
+                <ul class="fly-list">
+                    {% for item in doctorlist %}
+                        <li >
+                            <a href="/index/index/appointment.html?id={{ item.id }}" class="fly-avatar">
+                                {% if item.avatar == '' %}
+                                    <img src="/upload/avatar/avatar.png" alt="">
+                                {% else %}
+                                    <img src="/upload/temp/{{ item.avatar }}" alt="">
+                                {% endif %}
+                            </a>
+                            <h2>
+                                <a class="layui-badge">{{ item.realname }}</a>
+                            </h2>
+                            <div class="fly-list-info">
+                                <a href="/index/index/appointment.html?id={{ item.id }}" link>
+                                    <cite>{{ item.email }}</cite>
+                                </a>
+                                <span class="right-align right">{{ item.addtime }}</span>
+                            </div>
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% include '../public/foot.html' %}
+<script>
+    jQuery(document).ajaxSend(function (event, xhr, settings) {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function sameOrigin(url) {
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+
+        function safeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    });
+</script>
+<script>
+    layui.use(['element', 'layer'], function () {
+        var element = layui.element; //导航的hover效果、二级菜单等功能，需要依赖element模块
+        var layer = layui.layer;
+        var page = 1;
+
+        function timestampToTime(timestamp) {
+            var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+            var Y = date.getFullYear() + '-';
+            var M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
+            var D = (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + ' ';
+            var h = (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + ':';
+            var m = (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()) + ':';
+            var s = (date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds());
+            return Y + M + D + h + m + s;
+
+        }
+    });
+</script>
+</body>
+</html>

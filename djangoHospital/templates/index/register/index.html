@@ -1,0 +1,131 @@
+
+{% include '../public/head1.html' %}
+{% load static %}
+<div class="layui-container fly-marginTop">
+    <div class="fly-panel fly-panel-user" pad20>
+        <div class="layui-tab layui-tab-brief" lay-filter="user">
+            <ul class="layui-tab-title">
+                <li><a href="/index/login/index.html">Login</a></li>
+                <li class="layui-this">Sign up</li>
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-form-pane">
+                        <form method="post" class="layui-form">
+                            {% csrf_token %}
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">Username</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="username" required lay-verify="required" autocomplete="off"
+                                           class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label for="L_pass" class="layui-form-label">Password</label>
+                                <div class="layui-input-inline">
+                                    <input type="password" id="L_pass" name="password" required lay-verify="required"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">Phone</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="telephone" required lay-verify="required"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+<!--                            add email fields in regiser-->
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">Email</label>
+                                <div class="layui-input-inline">
+                                    <input type="email" name="email" required lay-verify="required"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">Full Name</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="realname" required lay-verify="required"
+                                           autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">Gender</label>
+                                <div class="layui-input-inline" style="border: 1px solid #e6e6e6;padding-bottom: 2px;">
+                                    <input type="radio" name="gender" value="1" title="Male" required lay-verify="required">
+                                    <input type="radio" name="gender" value="2" title="Female" required lay-verify="required">
+                                </div>
+                            </div>
+                            <div class="layui-form-item layui-form-text" style="width: 370px;">
+                                <label class="layui-form-label">Your Address</label>
+                                <div class="layui-input-block">
+                                    <textarea placeholder="Please enter your address" class="layui-textarea" name="address" lay-verify="required"></textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <button class="layui-btn" lay-filter="register" lay-submit type="submit">Sign up
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include '../public/foot.html' %}
+
+<script src="{% static '/index' %}/js/jquery.min.js"></script>
+<script src="{% static '/index' %}/layui/layui.js"></script>
+<script>
+    layui.use(['form', 'layer'], function () {
+        var form = layui.form
+            , layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            pass: [
+                /^[\S]{6,12}$/
+                , 'The password must be between 6 and 12 digits and cannot contain spaces'
+            ]
+            , content: function (value) {
+                layedit.sync(editIndex);
+            }
+        });
+
+        //监听提交
+        form.on('submit(register)', function (data) {
+            {#console.log(data.field);#}
+            {#return false#}
+            $.ajax({
+                url: "register.html",
+                type: 'POST',
+                dataType: 'json',
+                data: data.field,
+                success: function (res) {
+
+                    if (res.state == '1') {
+                        layer.msg(res.msg, {icon: 1, time: 1000}, function () {
+                            location.href = "/index/login/index.html";
+                        });
+                        return false;
+                    } else {
+                        layer.msg(res.msg, {icon: 2, time: 1000}, function () {
+                        });
+                    }
+
+                },
+                error: function (res) {
+                    //called when there is an error
+                    layer.msg('Please select gender.', {icon: 2, time: 1000}, function () {
+                    });
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

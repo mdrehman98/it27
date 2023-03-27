@@ -1,0 +1,198 @@
+{% extends '../../base.html' %}
+{% block title %}{% endblock %}
+{% block content %}
+    <body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form">
+                {% csrf_token %}
+                <div class="layui-form-item">
+                    <div class="layui-col-xs6">
+                        <label class="layui-form-label">
+                            <span class="x-red">*</span>Username
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="username" required="" lay-verify="required"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>The initial password is 123456.
+                        </div>
+                    </div>
+
+                    <div class="layui-col-xs6">
+                        <label class="layui-form-label">
+                            Full Name
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="realname" value="" required="" lay-verify="required"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-col-xs6">
+                        <label class="layui-form-label">
+                            Phone
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="telephone" value="" required="" lay-verify="required"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>
+                        </div>
+                    </div>
+                    <div class="layui-col-xs6">
+                        <label class="layui-form-label">
+                           Email
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="email" value="" required="" lay-verify="required"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item">
+                   <div class="layui-col-xs6">
+                        <label class="layui-form-label">
+                            Address
+                        </label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="address" value="" required="" lay-verify="required"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">
+                            <span class="x-red">*</span>
+                        </div>
+                    </div>
+
+                    <div class="layui-col-xs6">
+                        <label class="layui-form-label">
+                           Gender
+                        </label>
+                        <div class="layui-input-inline">
+                            <select name="gender" lay-verify="required">
+                                <option value="">Please select</option>
+                                <option value="1">Male</option>
+                                <option value="2">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-col-xs12">
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label">
+                                Avatar
+                            </label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="avatar" id="avatar" readonly
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                            <button type="button" class="layui-btn" id="test1">select file</button>
+                        </div>
+                        <div class="layui-col-xs6">
+                            <label class="layui-form-label"><span class="x-red">*</span>Account Status</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="status" value="1" lay-skin="primary" title="Available"
+                                       checked="">
+                                <input type="radio" name="status" value="0" lay-skin="primary" title="Unavailable">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"></label>
+                    <button class="layui-btn" lay-filter="add" lay-submit="">
+                        Add
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </body>
+    <script>
+
+        layui.use(['form', 'layer', 'upload'], function () {
+            $ = layui.jquery;
+            var form = layui.form,
+                upload = layui.upload,
+                layer = layui.layer;
+
+            //自定义验证规则
+            form.verify({});
+
+            //普通图片上传
+            var uploadInst = upload.render({
+                elem: '#test1'
+                {#, exts: '*'#}
+                , url: '/admin/upload/index.html' //改成您自己的上传接口
+                , before: function (obj) {
+                }
+                , done: function (res) {
+                    // 如果上传失败
+                    if (res.state == 1) {
+                        $("#avatar").val(res.name);
+                        return layer.msg('upload success');
+                    }
+                    //上传成功
+                }
+                , error: function () {
+                    //演示失败状态，并实现重传
+                    var demoText = $('#demoText');
+                    demoText.html('<span style="color: #FF5722;">upload error</span> <a class="layui-btn layui-btn-xs demo-reload">retry</a>');
+                    demoText.find('.demo-reload').on('click', function () {
+                        uploadInst.upload();
+                    });
+                }
+            });
+
+            //监听提交
+            form.on('submit(add)', function (data) {
+                console.log(data);
+                //发异步，把数据提交
+                $.ajax({
+                    url: "save.html",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data.field,
+                    success: function (res) {
+                        {#console.log(res)#}
+                        if (res.state == 1) {
+                            layer.msg(res.msg, {icon: 1}, function () {
+                                //关闭当前frame
+                                xadmin.close();
+                                // 可以对父窗口进行刷新
+                                xadmin.father_reload();
+                            });
+                        } else {
+                            layer.msg(res.msg, {icon: 5}, function () {
+                            });
+                        }
+                    },
+                    error: function (res) {
+                        //called when there is an error
+                        layer.msg('Network connection failed. Please try again later', {icon: 2}, function () {
+                        });
+                    }
+                });
+
+                return false;
+            });
+
+        });
+    </script>
+{% endblock %}

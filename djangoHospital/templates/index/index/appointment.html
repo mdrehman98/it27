@@ -1,0 +1,164 @@
+{% include '../public/head.html' %}
+{% load static %}
+
+<div class="layui-container" style="margin-top: 20px;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12 content detail">
+            <div class="fly-panel detail-box">
+                <div class="detail-about">
+                    <a class="fly-avatar" href="javascript:;">
+                        {% if info.avatar == '' %}
+                            <img src="/upload/temp/avatar.png" alt="">
+                        {% else %}
+                            <img src="/upload/temp/{{ info.avatar }}" alt="">
+                        {% endif %}
+
+                    </a>
+                    <div class="fly-detail-user">
+                        <a href="javascript:;" class="fly-link">
+                            <cite>{{ info.realname }}</cite>
+                        </a>
+                    </div>
+                    <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
+                        <span style="padding-right: 10px; color: #FF7200">Email：{{ info.email }}</span>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="fly-panel detail-box" id="flyReply">
+                <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                    <legend>Appointment</legend>
+                </fieldset>
+
+                <div class="layui-form-pane">
+                    <form action="" method="post" class="layui-form">
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <input type="text" name="app_date" placeholder="Please select a date"
+                                       id="app_date" value="" required="" lay-verify="required"
+                                       autocomplete="off" class="layui-input" style="width: 275px;">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-inline">
+                                <input type="text" name="start_time" id="start_time" value="" required=""
+                                       lay-verify="required"
+                                       autocomplete="off" class="layui-input" placeholder="Please select a time"
+                                       style="width: 275px;">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <a name="comment"></a>
+                            <div class="layui-input-block">
+                                <textarea name="comments" required lay-verify="required"
+                                          placeholder="Please enter your symptoms" class="layui-textarea fly-editor"
+                                          style="height: 150px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <button class="layui-btn" lay-filter="save" lay-submit>Sumbit</button>
+                        </div>
+                        <input type="hidden" name="doctor_id" value="{{ info.id }}">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% include '../public/foot.html' %}
+<script>
+    jQuery(document).ajaxSend(function (event, xhr, settings) {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function sameOrigin(url) {
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+
+        function safeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    });
+</script>
+<script>
+
+    layui.use(['element', 'layer', 'form', 'laydate'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var form = layui.form;
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#app_date'
+            , lang: 'en'
+        });
+
+        laydate.render({
+            elem: '#start_time'
+            , type: 'time'
+            , lang: 'en'
+            , format: 'HH:mm'
+        });
+
+        //监听提交
+        form.on('submit(save)', function (data) {
+            console.log(data.field);
+            {#return false#}
+            $.ajax({
+                url: "save.html",
+                type: 'POST',
+                dataType: 'json',
+                data: data.field,
+                success: function (res) {
+                    if (res.state == '1') {
+                        layer.msg(res.msg, {icon: 1, time: 1000}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg(res.msg, {icon: 2, time: 1000}, function () {
+                        });
+                    }
+
+                },
+                error: function (res) {
+                    layer.msg('Network connection failed. Please try again later', {icon: 2, time: 1000}, function () {
+                    });
+                }
+            });
+            return false;
+        });
+    })
+</script>
+
+</body>
+</html>

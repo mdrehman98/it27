@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>'Hospital Management System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="">
+    <meta name="description" content="">
+    <link rel="stylesheet" href="{% static '/index' %}/layui/css/layui.css">
+    <link rel="stylesheet" href="{% static '/index' %}/css/global.css">
+    <script src="{% static '/index' %}/js/jquery.min.js"></script>
+    <script src="{% static '/index' %}/layui/layui.js"></script>
+</head>
+<body>
+
+<div class="layui-container">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12 fly-home-jie">
+
+            <div class="layui-col-md6 fly-home-da">
+                <div class="fly-panel">
+                    <ul class="home-jieda">
+                        <li>
+
+                            <div class="home-dacontent">
+                                Symptoms:{{ info.symptoms }}
+                            </div>
+                        </li>
+                        <li>
+
+                            <div class="home-dacontent">
+                                Diagnosis:{{ info.results }}
+                            </div>
+                        </li>
+                        <li>
+
+                            <div class="home-dacontent">
+                                Treatment:{{ info.treatment }}
+                            </div>
+                        </li>
+                        <li>
+
+                            <div class="home-dacontent">
+                                Instructions:{{ info.desc }}
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
+

@@ -1,0 +1,102 @@
+{% include '../public/head1.html' %}
+{% load static %}
+
+<div class="layui-container fly-marginTop">
+  <div class="fly-panel fly-panel-user" pad20>
+    <div class="layui-tab layui-tab-brief" lay-filter="user">
+      <ul class="layui-tab-title">
+        <li class="layui-this">Log in</li>
+        <li><a href="/index/register/index.html">Sign up</a></li>
+      </ul>
+      <div class="layui-tab-content" style="padding: 20px 0;">
+        <div class="layui-tab-item layui-show">
+          <div class="layui-form-pane">
+            <form method="post" class="layui-form">
+              {% csrf_token %}
+              <div class="layui-form-item">
+                <label class="layui-form-label">Username</label>
+                <div class="layui-input-inline">
+                  <input type="text"  name="username" required lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <label for="L_pass" class="layui-form-label">Password</label>
+                <div class="layui-input-inline">
+                  <input type="password" id="L_pass" name="password" required lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+              </div>
+
+              <div class="layui-form-item">
+                <button class="layui-btn" lay-filter="login" lay-submit type="submit">Log in</button>
+              </div>
+
+                <div class="layui-form-item">
+                <a target="_blank" href="/common/login/index.html">If you are doctor or administrator, please click here to log in.</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% include '../public/foot.html' %}
+
+<script src="{% static '/index' %}/js/jquery.min.js"></script>
+<script src="{% static '/index' %}/layui/layui.js"></script>
+<script>
+    layui.use(['form','layer'], function() {
+        var form = layui.form
+            , layer = layui.layer;
+
+        //自定义验证规则
+        form.verify({
+            title: function (value) {
+                if (value.length < 5) {
+                    return '标题至少得5个字符啊';
+                }
+            }
+            , pass: [
+                /^[\S]{6,12}$/
+                , '密码必须6到12位，且不能出现空格'
+            ]
+            , content: function (value) {
+                layedit.sync(editIndex);
+            }
+        });
+
+        //监听提交
+        form.on('submit(login)', function (data) {
+            {#console.log(data.field);#}
+            {#return false#}
+            $.ajax({
+                    url: "login.html",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data.field,
+                    success: function(res) {
+                        if(res.state=='1'){
+                            layer.msg(res.msg,{icon:1,time:1000},function(){
+                                location.href="/index/index/index.html";
+                            });
+                            return false;
+                        }else{
+                            layer.msg(res.msg,{icon:2,time:1000},function(){
+                            });
+                        }
+
+                    },
+                    error: function(res) {
+                        //called when there is an error
+                        layer.msg('Network connection failed. Please try again later',{icon:2,time:1000},function(){
+                        });
+                    }
+            });
+            return false;
+        });
+    });
+</script>
+
+</body>
+</html>

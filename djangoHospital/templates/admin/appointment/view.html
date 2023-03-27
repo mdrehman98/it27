@@ -1,0 +1,74 @@
+{% extends '../../base.html' %}
+{% block title %}{% endblock %}
+{% block content %}
+    <body>
+    <div class="layui-fluid">
+        <div class="layui-row">
+            <form class="layui-form">
+                {% csrf_token %}
+                <div class="layui-form-item">
+                    <div class="layui-col-xs12">
+                        <label class="layui-form-label">
+                            <span class="x-red">*</span>Symptoms
+                        </label>
+                        <div class="layui-input-block">
+                            <textarea name="symptoms" required lay-verify="required"
+                                      placeholder="Please enter symptoms" class="layui-textarea"
+                                      style="height: 120px;">{{ info.symptoms }}</textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-col-xs12">
+                        <label class="layui-form-label">
+                            <span class="x-red">*</span>Diagnosis
+                        </label>
+                        <div class="layui-input-block">
+                            <textarea name="results" required lay-verify="required"
+                                      placeholder="Please enter diagnosis" class="layui-textarea"
+                                      style="height: 120px;">{{ info.results }}</textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-col-xs12">
+                        <label class="layui-form-label">
+                            <span class="x-red">*</span>Treatment
+                        </label>
+                        <div class="layui-input-block">
+                            <textarea name="treatment" required lay-verify="required"
+                                      placeholder="Please enter treatment" class="layui-textarea"
+                                      style="height: 120px;">{{ info.treatment }}</textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="layui-form-item">
+                    <div class="layui-col-xs12">
+                        <label class="layui-form-label">
+                            <span class="x-red">*</span>Instructions
+                        </label>
+                        <div class="layui-input-block">
+                            <textarea name="desc" required lay-verify="required"
+                                      placeholder="Please enter instructions" class="layui-textarea"
+                                      style="height: 120px;">{{ info.desc }}</textarea>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    </body>
+{% endblock %}

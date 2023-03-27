@@ -1,0 +1,130 @@
+{% include '../public/head2.html' %}
+{% load static %}
+
+<div class="layui-container fly-marginTop fly-user-main">
+    <ul class="layui-nav layui-nav-tree layui-inline" lay-filter="user">
+
+        <li class="layui-nav-item layui-this">
+            <a href="/index/user/center.html">
+                My Appointment
+            </a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/index/user/report.html">
+                My Report
+            </a>
+        </li>
+        <li class="layui-nav-item">
+            <a href="/index/user/set.html">
+                Basic Settings
+            </a>
+        </li>
+    </ul>
+
+    <div class="fly-panel fly-panel-user" pad20>
+
+        <div class="layui-tab layui-tab-brief" lay-filter="user">
+            <ul class="layui-tab-title" id="LAY_mine">
+                <li data-type="mine-jie" lay-id="index" class="layui-this">Appointment
+                    List
+                </li>
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-tab-item layui-show">
+                    <ul class="mine-view jie-row">
+                        {% for item in appointments %}
+                            <li>
+                                <a class="mine-edit"
+                                   href="javascript:;">{{ item.doctor }}</a>
+
+                                <a class="jie-title"
+                                   href="javascript:;">{{ item.app_date }}</a>
+
+                                <a class="jie-title"
+                                   href="javascript:;">{{ item.start_time }}</a>
+                                <i style="float: right;">{{ item.addtime }}</i>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include '../public/foot.html' %}
+<script>
+    jQuery(document).ajaxSend(function (event, xhr, settings) {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function sameOrigin(url) {
+            // url could be relative or scheme relative or absolute
+            var host = document.location.host; // host + port
+            var protocol = document.location.protocol;
+            var sr_origin = '//' + host;
+            var origin = protocol + sr_origin;
+            // Allow absolute or scheme relative URLs to same origin
+            return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+                (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+                // or any other URL that isn't scheme relative or absolute i.e relative.
+                !(/^(\/\/|http:|https:).*/.test(url));
+        }
+
+        function safeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        if (!safeMethod(settings.type) && sameOrigin(settings.url)) {
+            xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+        }
+    });
+</script>
+<script>
+
+    layui.use(['element', 'layer', 'form'], function () {
+        var element = layui.element;
+        var layer = layui.layer;
+        var form = layui.form;
+
+
+        //删除消息
+        $(".delposts").click(function () {
+            var id = $(this).data('id');
+            layer.confirm('Are you sure you want to delete？', {
+                btn: ['Sure', 'Cancel'] //按钮
+                , title: 'System prompt'
+            }, function () {
+                $.post('/index/posts/delete.html', {id: id}, function (res) {
+                    res = JSON.parse(res);
+                    if (res.state == 1) {
+                        layer.msg(res.msg, {icon: 1, time: 1000}, function () {
+                            location.reload();
+                        });
+                    } else {
+                        layer.msg(res.msg, {icon: 5, time: 1000});
+                    }
+                })
+            }, function () {
+
+            });
+        })
+
+
+    });
+
+
+</script>
